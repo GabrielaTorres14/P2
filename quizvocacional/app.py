@@ -1,5 +1,3 @@
-# app.py - Quiz Vocacional Jurídico (versão corrigida para Streamlit + Gemini)
-
 import json
 import os
 from datetime import datetime
