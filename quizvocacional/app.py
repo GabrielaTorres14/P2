@@ -52,10 +52,9 @@ DESCRICOES_BASE = {
 
 @st.cache_data
 def carregar_perguntas():
-with open("perguntas.json", "r", encoding="utf-8") as f:
+    with open("perguntas.json", "r", encoding="utf-8") as f:
         data = json.load(f)
-    return data["perguntas"]
-
+    return data
 
 def get_gemini_descricao(carreira_codigo: str) -> str:
     """Gera descrição com Gemini; se falhar, usa base."""
