@@ -1,5 +1,0 @@
-streamlit
-pandas
-plotly
-fpdf
-google-generativeai==0.7.2
