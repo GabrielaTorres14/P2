@@ -8,9 +8,9 @@ from fpdf import FPDF
 
 # Tentativa de importar Gemini (opcional)
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_LIB_DISPONIVEL = True
-except ImportError:
+except Exception:
     GEMINI_LIB_DISPONIVEL = False
 
 # ---------------- CONFIGURAÇÃO BÁSICA ---------------- #
@@ -64,44 +64,38 @@ def carregar_perguntas():
 
 
 def get_gemini_descricao(carreira_codigo: str) -> str:
-    """
-    Usa a API do Gemini (se disponível e configurada) para enriquecer
-    a descrição da carreira. Se não der, retorna a descrição base.
-    """
     descricao_base = DESCRICOES_BASE.get(carreira_codigo, "")
 
-    # Se a lib não está instalada, volta para o básico
     if not GEMINI_LIB_DISPONIVEL:
         return descricao_base
 
-    api_key = st.secrets.get("GEMINI_API_KEY", None)
-    if not api_key:
+    # Pega chave dos secrets do Streamlit
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
         return descricao_base
 
+    # Configura cliente
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+    except Exception:
+        return descricao_base
 
-        carreira_nome = CARREIRAS.get(carreira_codigo, carreira_codigo)
-        prompt = f"""
-        Você é um orientador vocacional jurídico.
-        Escreva um texto claro, motivador e bem estruturado explicando a carreira de {carreira_nome}
-        para um estudante de Direito. Use linguagem acessível, mas acadêmica, em tom encorajador.
+    carreira_nome = CARREIRAS.get(carreira_codigo, carreira_codigo)
 
-        Considere como base a seguinte descrição:
-        \"\"\"{descricao_base}\"\"\".
+    prompt = (
+        f"Explique a carreira de {carreira_nome} para um estudante de Direito. "
+        f"Use tom sério e objetivo. Base: {descricao_base}. "
+        "Organize em: visão geral, atividades, habilidades, perfil ideal, desafios."
+    )
 
-        Estruture o texto em:
-        - Visão geral da carreira
-        - Principais atividades e rotina
-        - Habilidades importantes
-        - Perfis de pessoa que tendem a se adaptar melhor
-        - Desafios e oportunidades
-        """
-
-        resposta = model.generate_content(prompt)
-        texto = resposta.text.strip()
-        # fallback se vier vazio
+    try:
+        client = genai.Client()
+        r = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        texto = r.text.strip()
         return texto if texto else descricao_base
     except Exception:
         return descricao_base
