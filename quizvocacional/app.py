@@ -1,4 +1,6 @@
+# app.py - Quiz Vocacional Jurídico (versão corrigida para Streamlit + Gemini)
 import json
+import os
 from datetime import datetime
 
 import pandas as pd
@@ -6,7 +8,7 @@ import plotly.express as px
 import streamlit as st
 from fpdf import FPDF
 
-# Tentativa de importar Gemini (opcional)
+# Tentativa de importar Gemini (google-genai). Se não disponível, fallback silencioso.
 try:
     from google import genai
     GEMINI_LIB_DISPONIVEL = True
@@ -52,80 +54,113 @@ DESCRICOES_BASE = {
     ),
 }
 
-
 # ---------------- FUNÇÕES AUXILIARES ---------------- #
 
 @st.cache_data
 def carregar_perguntas():
-    """Carrega as perguntas a partir do arquivo JSON."""
+    """Carrega as perguntas a partir do arquivo JSON (perguntas.json no root)."""
     with open("perguntas.json", "r", encoding="utf-8") as f:
         data = json.load(f)
     return data["perguntas"]
 
 
 def get_gemini_descricao(carreira_codigo: str) -> str:
+    """
+    Tenta enriquecer a descrição usando Gemini (google-genai).
+    Se a lib não estiver disponível, ou a chave não estiver configurada, retorna a descrição base.
+    """
     descricao_base = DESCRICOES_BASE.get(carreira_codigo, "")
 
+    # Se a lib não está instalada, usa a base
     if not GEMINI_LIB_DISPONIVEL:
         return descricao_base
 
-    # Pega chave dos secrets do Streamlit
+    # Pegar chave: primeiro st.secrets (Streamlit Cloud), depois variáveis de ambiente
+    api_key = None
     try:
-        api_key = st.secrets["GEMINI_API_KEY"]
+        api_key = st.secrets.get("GEMINI_API_KEY")
     except Exception:
+        api_key = None
+
+    if not api_key:
+        api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
         return descricao_base
 
-    # Configura cliente
+    # Configura o SDK
     try:
         genai.configure(api_key=api_key)
     except Exception:
-        return descricao_base
+        # Se configure não existir ou falhar, tentamos seguir (SDK pode usar Client())
+        pass
 
     carreira_nome = CARREIRAS.get(carreira_codigo, carreira_codigo)
 
     prompt = (
-        f"Explique a carreira de {carreira_nome} para um estudante de Direito. "
-        f"Use tom sério e objetivo. Base: {descricao_base}. "
-        "Organize em: visão geral, atividades, habilidades, perfil ideal, desafios."
+        f"Você é um orientador vocacional jurídico. Explique de forma clara e objetiva a carreira de {carreira_nome} "
+        f"para um estudante de Direito. Use linguagem acessível, em tom encorajador. "
+        f"Base: {descricao_base} "
+        "Estruture em: visão geral; principais atividades; habilidades importantes; perfil ideal; desafios."
     )
 
     try:
-        client = genai.Client()
-        r = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        texto = r.text.strip()
-        return texto if texto else descricao_base
+        # Usa Client + models.generate_content quando disponível
+        client = None
+        try:
+            client = genai.Client()
+        except Exception:
+            client = None
+
+        if client is not None:
+            # generate_content -> retorno com .text (fallback seguro)
+            try:
+                r = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=prompt
+                )
+                texto = getattr(r, "text", None)
+                if texto:
+                    return texto.strip()
+            except Exception:
+                # continua para tentativa alternativa abaixo
+                pass
+
+        # Alternativa: genai.generate_text / genai.generate (dependendo da versão)
+        try:
+            # Retorno pode variar; tentamos extrair texto de forma genérica
+            res = genai.generate_text(model="gemini-2.5-flash", prompt=prompt)
+            texto = getattr(res, "text", None) or str(res)
+            if texto:
+                return texto.strip()
+        except Exception:
+            pass
+
     except Exception:
+        # Em qualquer falha, fazemos fallback para base
         return descricao_base
+
+    return descricao_base
 
 
 def calcular_resultados(respostas_usuario):
-    """
-    Recebe um dicionário {id_pergunta: carreira_codigo} e devolve:
-    - dicionário com pontuação por carreira
-    - carreira_final (código)
-    """
+    """Calcula pontuação por carreira e retorna (resultados_dict, carreira_final)."""
     resultados = {c: 0 for c in CARREIRAS.keys()}
-
     for carreira in respostas_usuario.values():
-        if carreira in resultados:
+        if carreira in resultados and carreira is not None:
             resultados[carreira] += 1
-
     carreira_final = max(resultados, key=resultados.get)
     return resultados, carreira_final
 
 
 def salvar_resultado_csv(nome, resultados, carreira_final):
-    """Salva o resultado individual em um CSV para o dashboard."""
+    """Salva o resultado individual em um CSV (resultados.csv) para o dashboard."""
     total = sum(resultados.values()) or 1
     linha = {
         "timestamp": datetime.now().isoformat(),
         "nome": nome if nome else "",
         "carreira_final": carreira_final,
     }
-    # adiciona as pontuações e percentuais
     for codigo, pontos in resultados.items():
         linha[f"pontos_{codigo}"] = pontos
         linha[f"perc_{codigo}"] = pontos / total * 100
@@ -175,7 +210,6 @@ def gerar_pdf_relatorio(nome, resultados, carreira_final, texto_descricao):
     pdf.set_font("Arial", "", 12)
     pdf.multi_cell(0, 7, texto_descricao)
 
-    # retorna bytes
     pdf_bytes = pdf.output(dest="S").encode("latin-1")
     return pdf_bytes
 
@@ -198,7 +232,6 @@ with tabs[0]:
 
     with st.form("quiz_form"):
         nome = st.text_input("Seu nome (opcional):")
-
         st.markdown("### Responda às perguntas abaixo:")
 
         respostas_usuario = {}
@@ -286,10 +319,8 @@ with tabs[1]:
     try:
         df_res = pd.read_csv("resultados.csv")
 
-        # Quantidade de respostas
         st.write(f"Total de respostas registradas: **{len(df_res)}**")
 
-        # Distribuição por carreira final
         dist = df_res["carreira_final"].value_counts().rename_axis("carreira").reset_index(name="qtd")
         dist["Carreira"] = dist["carreira"].map(CARREIRAS)
         dist["Percentual"] = dist["qtd"] / dist["qtd"].sum() * 100
@@ -320,3 +351,4 @@ with tabs[1]:
             "Ainda não há dados suficientes para o dashboard. "
             "Peça para mais pessoas responderem o quiz na aba **“Fazer o Quiz”**."
         )
+
