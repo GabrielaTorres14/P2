@@ -1,5 +1,5 @@
-google-genai
-fpdf
+streamlit
 pandas
 plotly
-streamlit
+fpdf
+google-generativeai==0.7.2
