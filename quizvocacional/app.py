@@ -52,7 +52,7 @@ DESCRICOES_BASE = {
 
 @st.cache_data
 def carregar_perguntas():
-    with open("perguntas.json", "r", encoding="utf-8") as f:
+with open("perguntas.json", "r", encoding="utf-8") as f:
         data = json.load(f)
     return data["perguntas"]
 
