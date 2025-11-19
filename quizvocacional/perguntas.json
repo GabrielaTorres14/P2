@@ -1,0 +1,104 @@
+{
+  "perguntas": [
+    {
+      "id": 1,
+      "texto": "1. Quando você pensa em trabalhar com Direito, o que mais lhe atrai?",
+      "opcoes": {
+        "a": { "texto": "Defender diretamente os interesses de clientes", "carreira": "advocacia" },
+        "b": { "texto": "Resolver conflitos de forma imparcial", "carreira": "magistratura" },
+        "c": { "texto": "Atuar em defesa da sociedade e do interesse público", "carreira": "ministerio_publico" },
+        "d": { "texto": "Ajudar empresas e pessoas a prevenir problemas jurídicos", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 2,
+      "texto": "2. Em sua rotina profissional ideal, você gostaria de:",
+      "opcoes": {
+        "a": { "texto": "Participar de audiências e sustentações orais", "carreira": "advocacia" },
+        "b": { "texto": "Proferir decisões que impactam a vida das pessoas", "carreira": "magistratura" },
+        "c": { "texto": "Conduzir investigações e oferecer denúncias", "carreira": "ministerio_publico" },
+        "d": { "texto": "Elaborar contratos e pareceres técnicos", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 3,
+      "texto": "3. Qual habilidade você mais valoriza em si mesmo?",
+      "opcoes": {
+        "a": { "texto": "Argumentação e persuasão", "carreira": "advocacia" },
+        "b": { "texto": "Imparcialidade e senso de justiça", "carreira": "magistratura" },
+        "c": { "texto": "Coragem e firmeza contra injustiças", "carreira": "ministerio_publico" },
+        "d": { "texto": "Análise detalhada e visão estratégica", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 4,
+      "texto": "4. Que tipo de desafio você prefere enfrentar?",
+      "opcoes": {
+        "a": { "texto": "Convencer juízes e tribunais", "carreira": "advocacia" },
+        "b": { "texto": "Tomar decisões difíceis em casos complexos", "carreira": "magistratura" },
+        "c": { "texto": "Lutar contra a criminalidade e defender a ordem", "carreira": "ministerio_publico" },
+        "d": { "texto": "Ajudar empresas a se manterem dentro da lei", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 5,
+      "texto": "5. Onde você se vê atuando daqui a 10 anos?",
+      "opcoes": {
+        "a": { "texto": "Em um grande escritório ou como advogado autônomo", "carreira": "advocacia" },
+        "b": { "texto": "Na condução de um tribunal", "carreira": "magistratura" },
+        "c": { "texto": "Como promotor ou procurador", "carreira": "ministerio_publico" },
+        "d": { "texto": "Em uma multinacional ou empresa de consultoria", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 6,
+      "texto": "6. Qual ambiente de trabalho mais combina com você?",
+      "opcoes": {
+        "a": { "texto": "Salas de audiência e contato constante com clientes", "carreira": "advocacia" },
+        "b": { "texto": "Tribunais e atividades ligadas ao julgamento de processos", "carreira": "magistratura" },
+        "c": { "texto": "Investigações criminais e defesa do interesse coletivo", "carreira": "ministerio_publico" },
+        "d": { "texto": "Escritórios corporativos e reuniões empresariais", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 7,
+      "texto": "7. Quando alguém te procura em busca de ajuda, você prefere:",
+      "opcoes": {
+        "a": { "texto": "Apoiar diretamente, defendendo sua causa", "carreira": "advocacia" },
+        "b": { "texto": "Ouvir os dois lados antes de decidir", "carreira": "magistratura" },
+        "c": { "texto": "Buscar justiça para a coletividade", "carreira": "ministerio_publico" },
+        "d": { "texto": "Aconselhar sobre como evitar problemas futuros", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 8,
+      "texto": "8. O que você considera mais gratificante em uma carreira?",
+      "opcoes": {
+        "a": { "texto": "Vencer casos e satisfazer clientes", "carreira": "advocacia" },
+        "b": { "texto": "Promover a justiça de forma equilibrada", "carreira": "magistratura" },
+        "c": { "texto": "Proteger a sociedade contra crimes e abusos", "carreira": "ministerio_publico" },
+        "d": { "texto": "Construir soluções jurídicas seguras para empresas", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 9,
+      "texto": "9. Como você reage a situações de pressão?",
+      "opcoes": {
+        "a": { "texto": "Uso a pressão para reforçar minha defesa", "carreira": "advocacia" },
+        "b": { "texto": "Mantenho a calma e sigo as normas legais", "carreira": "magistratura" },
+        "c": { "texto": "Transformo a pressão em motivação para lutar pela justiça", "carreira": "ministerio_publico" },
+        "d": { "texto": "Analiso friamente e busco alternativas práticas", "carreira": "consultoria" }
+      }
+    },
+    {
+      "id": 10,
+      "texto": "10. Qual dessas atividades você mais se imagina fazendo?",
+      "opcoes": {
+        "a": { "texto": "Defender clientes em tribunais", "carreira": "advocacia" },
+        "b": { "texto": "Julgar casos e aplicar a lei", "carreira": "magistratura" },
+        "c": { "texto": "Denunciar criminosos e combater ilegalidades", "carreira": "ministerio_publico" },
+        "d": { "texto": "Redigir pareceres e contratos empresariais", "carreira": "consultoria" }
+      }
+    }
+  ]
+}
